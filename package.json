@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@tensorflow/tfjs": "^4.2.0",
+    "@tensorflow/tfjs-node": "^4.2.0",
+    "danfojs": "^1.1.2",
+    "danfojs-node": "^1.1.2",
+    "scikit-node": "^0.2.2"
+  },
+  "name": "weekly",
+  "version": "1.0.0",
+  "main": "4_load_model.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yassdenn/WeatherPrediction.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yassdenn/WeatherPrediction/issues"
+  },
+  "homepage": "https://github.com/yassdenn/WeatherPrediction#readme",
+  "description": "",
+  "type": "module"
+}

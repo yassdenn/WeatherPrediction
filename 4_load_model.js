@@ -1,7 +1,8 @@
 // JavaScript
 
 import * as tf from '@tensorflow/tfjs';
-import * as sklearn from 'scikit-node'
+import pkg from 'scikitjs'
+const { MinMaxScaler } = pkg
 
 console.log('loading');
 const model = await tf.loadLayersModel('https://wettermodel.s3.eu-central-1.amazonaws.com/model.json');
@@ -11,9 +12,8 @@ const data = [13.6,91.,12.2, 1002.8,8.,12.4,85.,9.9,1003.8,8.,11.4,92.,10.1,1003
 
 async function scaleData(data) {
   try {
-    const scaler = new sklearn.MinMaxScaler();
-    await scaler.fit(data);
-    const scaledData = await scaler.transform(data);
+    const scaler = new MinMaxScaler();
+    const scaledData = scaler.fitTransform(data);
     return scaledData;
   } catch (err) {
     console.error(`Failed to scale data: ${err}`);

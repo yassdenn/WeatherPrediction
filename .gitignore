@@ -6,3 +6,4 @@ checkpoint
 ..index
 ..data-00000-of-00001
 .DS_Store
+minmax_scaler.joblib

@@ -14,24 +14,72 @@ async function load_model() {
 const model = load_model();
 
 
-const data = [13.6,91.,12.2, 1002.8,8.,12.4,85.,9.9,1003.8,8.,11.4,92.,10.1,1003.,8.,11.2,96.,10.6,1003.8,8.,11.2,96.,10.6,1004.3,8.,10.9,94.,10.,1004.7,7.9100728]
+const data = [15.100000000000001, 76.0, 10.899999999999999, 1016.0, 1.0, 17.4, 65.0, 10.800000000000002, 1016.4, 2.0, 20.4, 55.0, 11.100000000000003, 1017.1000000000001, 1.0, 21.899999999999995, 50.00000000000001, 11.000000000000002, 1017.5, 1.0, 23.3, 45.99999999999999, 11.000000000000002, 1018.1, 3.0, 25.400000000000002, 41.0, 11.2, 1018.3]
 
-function scaleData(data) {
-  let minValue = Math.min(...data);
-  let maxValue = Math.max(...data);
-  let range = maxValue - minValue;
+const fs = require('fs');
 
-  return data.map((x) => (x - minValue) / range);
-};
-const scaledData = scaleData(data);
-console.log(scaledData);
+async function loadScaler(filename) {
+  try {
+    const params = JSON.parse(fs.readFileSync(filename, 'utf-8'));
+    console.log(`Scaler loaded from ${filename}`);
+    return params;
+  } catch (err) {
+    console.error(`Failed to load scaler from ${filename}: ${err}`);
+    throw err;
+  }
+}
 
-const values = tf.tensor3d([[[0.50957854, 0.89534884, 0.72207084, 0.35868006, 0.29166667,0.48659004, 0.8255814 , 0.65940054, 0.37302726, 0.29166667,0.46743295, 0.90697674, 0.66485014, 0.3615495 , 0.29166667,0.46360153, 0.95348837, 0.67847411, 0.37302726, 0.29166667,0.46360153, 0.95348837, 0.67847411, 0.38020086, 0.29166667,0.45785441, 0.93023256, 0.66212534, 0.38593974]]]);
+async function scaleData(params, data) {
+  try {
+    const min = params.min;
+    //console.log(min);
+    const range = params.range;
+    //console.log(range);
+    // Handle the case where data is a one-dimensional array
+    const isOneDimensional = !Array.isArray(data[0]);
+    const rows = isOneDimensional ? [data] : data;
 
-model.then(function(pred){
-  const prediction = pred.predict(values).dataSync();
-  console.log('prediction:')
-  console.log(prediction);
-}, function (err) {
-  console.log(err);
+    // Implement MinMaxScaler in JavaScript
+    const scaledData = rows.map((row) => {
+      return row.map((value, index) => {
+        return (value - min[index]) / range[index];
+      });
+    });
+
+    return isOneDimensional ? scaledData[0] : scaledData;
+  } catch (err) {
+    console.error(`Failed to scale data: ${err}`);
+    throw err;
+  }
+}
+
+
+loadScaler('minmax_scaler.json').then((params) => {
+  scaleData(params, data).then((scaledData) => {
+    // Use the scaled data
+    console.log(scaledData);
+    const val = tf.tensor3d([[scaledData]]);
+    model.then(function(pred){
+      const prediction = pred.predict(val).dataSync();
+      const scaledPred = prediction*24+1
+      console.log(Math.round(scaledPred))
+      //Use prediction
+
+
+    });
+  });
 });
+
+console.log('outside')
+//console.log(scaledData)
+
+//function scaleData(data) {
+//  let minValue = Math.min(...data);
+//  let maxValue = Math.max(...data);
+//  let range = maxValue - minValue;
+
+//  return data.map((x) => (x - minValue) / range);
+//};
+//const scaledData = scaleData(data);
+//console.log(scaledData);
+

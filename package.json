@@ -81,6 +81,7 @@
     "form-data": "^3.0.1",
     "frac": "^1.1.2",
     "fraction.js": "^4.2.0",
+    "fs": "^0.0.1-security",
     "fs-minipass": "^1.2.7",
     "fs.realpath": "^1.0.0",
     "gauge": "^3.0.2",

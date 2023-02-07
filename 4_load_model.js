@@ -70,7 +70,6 @@ loadScaler('minmax_scaler.json').then((params) => {
   });
 });
 
-console.log('outside')
 //console.log(scaledData)
 
 //function scaleData(data) {

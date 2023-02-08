@@ -6,7 +6,7 @@ sk.setBackend(tf);
 
 async function load_model() {
   console.log('loading');
-  let model = await tf.loadLayersModel('https://wettermodel.s3.eu-central-1.amazonaws.com/model.json');
+  let model = await tf.loadLayersModel('https://wetter1.s3.eu-central-1.amazonaws.com/model.json');
   model.summary();
   return model;
 }
@@ -14,7 +14,7 @@ async function load_model() {
 const model = load_model();
 
 
-const data = [15.100000000000001, 76.0, 10.899999999999999, 1016.0, 1.0, 17.4, 65.0, 10.800000000000002, 1016.4, 2.0, 20.4, 55.0, 11.100000000000003, 1017.1000000000001, 1.0, 21.899999999999995, 50.00000000000001, 11.000000000000002, 1017.5, 1.0, 23.3, 45.99999999999999, 11.000000000000002, 1018.1, 3.0, 25.400000000000002, 41.0, 11.2, 1018.3]
+const data = [4.800000000000001, 72.0, 1029.1, 1.0, 3.8000000000000003, 76.0, 1029.5, 1.0, 3.6999999999999997, 74.0, 1029.5, 1.0, 0.7000000000000002, 86.0, 1029.5, 1.0, -0.7000000000000002, 93.0, 1029.6, 1.0, -0.9000000000000005, 95.0, 1029.5];
 
 const fs = require('fs');
 
@@ -54,7 +54,7 @@ async function scaleData(params, data) {
 }
 
 
-loadScaler('minmax_scaler.json').then((params) => {
+loadScaler('minmax_scaler1.json').then((params) => {
   scaleData(params, data).then((scaledData) => {
     // Use the scaled data
     console.log(scaledData);

@@ -5,6 +5,8 @@ const axios = require('axios');
 const fs = require('fs');
 //const sk = require('scikitjs');
 
+insert_link = "https://api23wetterstation.pythonanywhere.com/predictions/insert/KPQHYyj4L6qKbULV"
+
 async function load_model() {
   console.log('loading');
   let model = await tf.loadLayersModel('https://wetter1.s3.eu-central-1.amazonaws.com/model.json');
@@ -66,11 +68,25 @@ const log_pred = async () => {
       const val = tf.tensor3d([[scaledData]]);
       model.then(function(pred){
         const prediction = pred.predict(val).dataSync();
-        const scaledPred = prediction*24+1
-        console.log(Math.round(scaledPred))
+        const scaledPred = Math.round(prediction*24+1)
+        console.log(scaledPred)
         //Use prediction
-  
-  
+        data = {
+          "temperature": myList[myList.length -3],
+          "humidity": myList[myList.length - 2],
+          "pressure": myList[myList.length-1],
+          "class": scaledPred
+        };
+        console.log(data)
+        axios.post(insert_link, data )
+        .then(response => {
+        // handle success
+        console.log(response.data);
+        })
+        .catch(error => {
+        // handle error
+        console.log(error);
+        });
       });
     });
   });

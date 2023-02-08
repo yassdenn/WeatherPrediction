@@ -1,8 +1,9 @@
 // JavaScript
 
 const tf = require('@tensorflow/tfjs');
-const sk = require('scikitjs');
-sk.setBackend(tf);
+const axios = require('axios');
+const fs = require('fs');
+//const sk = require('scikitjs');
 
 async function load_model() {
   console.log('loading');
@@ -13,10 +14,11 @@ async function load_model() {
 
 const model = load_model();
 
-
-const data = [4.800000000000001, 72.0, 1029.1, 1.0, 3.8000000000000003, 76.0, 1029.5, 1.0, 3.6999999999999997, 74.0, 1029.5, 1.0, 0.7000000000000002, 86.0, 1029.5, 1.0, -0.7000000000000002, 93.0, 1029.6, 1.0, -0.9000000000000005, 95.0, 1029.5];
-
-const fs = require('fs');
+const fetchListFromAPI = async () => {
+  const response = await axios.get('https://api23wetterstation.pythonanywhere.com/predictions/latest');
+  const list = response.data;
+  return list;
+};
 
 async function loadScaler(filename) {
   try {
@@ -54,21 +56,31 @@ async function scaleData(params, data) {
 }
 
 
-loadScaler('minmax_scaler1.json').then((params) => {
-  scaleData(params, data).then((scaledData) => {
-    // Use the scaled data
-    console.log(scaledData);
-    const val = tf.tensor3d([[scaledData]]);
-    model.then(function(pred){
-      const prediction = pred.predict(val).dataSync();
-      const scaledPred = prediction*24+1
-      console.log(Math.round(scaledPred))
-      //Use prediction
-
-
+const log_pred = async () => {
+  const myList = await fetchListFromAPI();
+  console.log(myList)
+  loadScaler('minmax_scaler1.json').then((params) => {
+    scaleData(params, myList).then((scaledData) => {
+      // Use the scaled data
+      console.log(scaledData);
+      const val = tf.tensor3d([[scaledData]]);
+      model.then(function(pred){
+        const prediction = pred.predict(val).dataSync();
+        const scaledPred = prediction*24+1
+        console.log(Math.round(scaledPred))
+        //Use prediction
+  
+  
+      });
     });
   });
-});
+}
+
+log_pred()
+
+
+
+//const data = [4.299999999999999, 72.0, 1033.9, 4.0, 4.299999999999999, 73.0, 1033.6, 4.0, 4.200000000000001, 73.0, 1033.7, 4.0, 4.200000000000001, 74.0, 1033.8, 8.0, 3.999999999999999, 76.0, 1034.0, 8.0, 3.8999999999999986, 78.0, 1034.2];
 
 //console.log(scaledData)
 
